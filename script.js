@@ -154,7 +154,7 @@ function trackInstall() {
 }
 
 // ========================================
-// Download Button Handler (GitHub Release)
+// Download Button Handler (Fixed for GitHub Release)
 // ========================================
 document.addEventListener('DOMContentLoaded', function() {
     const downloadBtn = document.getElementById('downloadBtn');
@@ -165,25 +165,25 @@ document.addEventListener('DOMContentLoaded', function() {
         // Track install
         trackInstall();
         
-        // Direct download from GitHub Release
-        const link = document.createElement('a');
-        link.href = APK_DOWNLOAD_URL;
-        link.download = 'broker-vpn.apk';
-        link.target = '_blank'; // Open in new tab for better compatibility
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        // Update button text
+        // Update button immediately
         const originalHTML = this.innerHTML;
-        this.innerHTML = '<i class="fas fa-check"></i><span>Downloading...</span>';
-        this.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Starting Download...</span>';
+        this.style.background = 'linear-gradient(135deg, #f39c12, #e67e22)';
         
-        // Reset button after 3 seconds
+        // Method 1: Direct window location (most reliable for GitHub releases)
         setTimeout(() => {
-            this.innerHTML = originalHTML;
-            this.style.background = 'linear-gradient(135deg, var(--primary-blue), var(--primary-purple))';
-        }, 3000);
+            window.location.href = APK_DOWNLOAD_URL;
+            
+            // Update button to success
+            downloadBtn.innerHTML = '<i class="fas fa-check"></i><span>Downloading...</span>';
+            downloadBtn.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+            
+            // Reset button after 3 seconds
+            setTimeout(() => {
+                downloadBtn.innerHTML = originalHTML;
+                downloadBtn.style.background = 'linear-gradient(135deg, var(--primary-blue), var(--primary-purple))';
+            }, 3000);
+        }, 500);
     });
 });
 
