@@ -5,6 +5,11 @@
  */
 
 // ========================================
+// APK Download URL (GitHub Release)
+// ========================================
+const APK_DOWNLOAD_URL = 'https://github.com/yeasinmdali/brokerfastsecurevpn/releases/download/v1.0.15/broker-vpn.apk';
+
+// ========================================
 // Mobile Menu Toggle
 // ========================================
 const menuToggle = document.getElementById('menuToggle');
@@ -73,25 +78,43 @@ function animateCounter(element, target) {
 }
 
 // ========================================
-// APK Information Detection
+// APK Information Detection (Auto from GitHub)
 // ========================================
 async function getAPKInfo() {
     try {
-        // Replace these with your actual APK details
-        const appSize = '12.5 MB';
-        const appVersion = 'v1.2.0';
+        // Extract version from GitHub URL
+        const urlParts = APK_DOWNLOAD_URL.split('/');
+        const versionIndex = urlParts.findIndex(part => part.startsWith('v'));
+        const version = versionIndex !== -1 ? urlParts[versionIndex] : 'v1.0.15';
         
-        // Update UI
-        document.getElementById('appSize').textContent = appSize;
-        document.getElementById('appVersion').textContent = appVersion;
+        // Try to get file size from GitHub API
+        const repoUrl = 'https://api.github.com/repos/yeasinmdali/brokerfastsecurevpn/releases/tags/' + version;
         
-        // Store APK filename globally
-        window.APK_FILENAME = 'broker-vpn.apk';
+        try {
+            const response = await fetch(repoUrl);
+            const data = await response.json();
+            
+            if (data.assets && data.assets.length > 0) {
+                const apkAsset = data.assets.find(asset => asset.name.endsWith('.apk'));
+                if (apkAsset) {
+                    const sizeInMB = (apkAsset.size / (1024 * 1024)).toFixed(1);
+                    document.getElementById('appSize').textContent = sizeInMB + ' MB';
+                    document.getElementById('appVersion').textContent = version;
+                    return;
+                }
+            }
+        } catch (apiError) {
+            console.log('GitHub API limit reached, using default values');
+        }
+        
+        // Fallback values
+        document.getElementById('appSize').textContent = '12.5 MB';
+        document.getElementById('appVersion').textContent = version;
         
     } catch (error) {
         console.error('Error loading APK info:', error);
         document.getElementById('appSize').textContent = '12.5 MB';
-        document.getElementById('appVersion').textContent = 'v1.2.0';
+        document.getElementById('appVersion').textContent = 'v1.0.15';
     }
 }
 
@@ -131,7 +154,7 @@ function trackInstall() {
 }
 
 // ========================================
-// Download Button Handler
+// Download Button Handler (GitHub Release)
 // ========================================
 document.addEventListener('DOMContentLoaded', function() {
     const downloadBtn = document.getElementById('downloadBtn');
@@ -142,14 +165,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Track install
         trackInstall();
         
-        // APK file path
-        const apkFileName = window.APK_FILENAME || 'broker-vpn.apk';
-        const apkPath = 'apk/' + apkFileName;
-        
-        // Create temporary download link
+        // Direct download from GitHub Release
         const link = document.createElement('a');
-        link.href = apkPath;
-        link.download = apkFileName;
+        link.href = APK_DOWNLOAD_URL;
+        link.download = 'broker-vpn.apk';
+        link.target = '_blank'; // Open in new tab for better compatibility
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -244,4 +264,5 @@ window.addEventListener('load', function() {
     animateCounter(document.getElementById('installCount'), installs);
     
     console.log('Broker VPN Website Loaded Successfully! 🚀');
+    console.log('APK Download URL:', APK_DOWNLOAD_URL);
 });
