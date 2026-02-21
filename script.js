@@ -1,48 +1,118 @@
+/**
  * Broker VPN - JavaScript
  * Developer: Yeasin Ali
- * Description: All interactive features for Broker VPN website
+ * All counters start from 5000
  */
 
 // ========================================
-// Mobile Menu Toggle
+// Configuration
 // ========================================
-const menuToggle = document.getElementById('menuToggle');
-const navMenu = document.getElementById('navMenu');
+const BASE_COUNT = 5000; // শুরু 5000 থেকে
 
-menuToggle.addEventListener('click', () => {
-    navMenu.classList.toggle('active');
-    const icon = menuToggle.querySelector('i');
-    
-    if (navMenu.classList.contains('active')) {
-        icon.classList.remove('fa-bars');
-        icon.classList.add('fa-times');
-    } else {
-        icon.classList.remove('fa-times');
-        icon.classList.add('fa-bars');
+// ========================================
+// DOM Ready
+// ========================================
+document.addEventListener('DOMContentLoaded', function() {
+
+    // ========================================
+    // Mobile Menu Toggle
+    // ========================================
+    const menuToggle = document.getElementById('menuToggle');
+    const navMenu = document.getElementById('navMenu');
+
+    if (menuToggle && navMenu) {
+        menuToggle.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+            const icon = this.querySelector('i');
+            
+            if (navMenu.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+
+        // Close menu when clicking nav link
+        document.querySelectorAll('.nav-link').forEach(function(link) {
+            link.addEventListener('click', function() {
+                navMenu.classList.remove('active');
+                const icon = menuToggle.querySelector('i');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            });
+        });
     }
-});
 
-// Close menu when clicking on a link
-document.querySelectorAll('.nav-link').forEach(link => {
-    link.addEventListener('click', () => {
-        navMenu.classList.remove('active');
-        const icon = menuToggle.querySelector('i');
-        icon.classList.remove('fa-times');
-        icon.classList.add('fa-bars');
+    // ========================================
+    // Download Button - শুধু tracking, block না
+    // ========================================
+    const downloadBtn = document.getElementById('downloadBtn');
+    
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', function() {
+            // Install count বাড়াও
+            incrementInstallCount();
+            
+            // Button animation
+            const originalHTML = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-check"></i><span>Downloading...</span>';
+            this.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+            
+            // 3 সেকেন্ড পর আগের মত
+            setTimeout(function() {
+                downloadBtn.innerHTML = originalHTML;
+                downloadBtn.style.background = 'linear-gradient(135deg, #4A90E2, #9B59B6)';
+            }, 3000);
+        });
+    }
+
+    // ========================================
+    // Scroll Animation
+    // ========================================
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.feature-card, .stat-card, .screenshot-item').forEach(function(el) {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(50px)';
+        el.style.transition = 'all 0.6s ease';
+        observer.observe(el);
     });
+
+    // ========================================
+    // Image Error Handling
+    // ========================================
+    document.querySelectorAll('img').forEach(function(img) {
+        img.onerror = function() {
+            this.style.display = 'none';
+        };
+    });
+
 });
 
 // ========================================
-// Particle Background Animation
+// Particle Background
 // ========================================
 function createParticles() {
     const container = document.getElementById('particleCanvas');
-    const particleCount = 50;
+    if (!container) return;
 
-    for (let i = 0; i < particleCount; i++) {
+    for (let i = 0; i < 50; i++) {
         const particle = document.createElement('div');
         particle.className = 'particle';
-        
         const size = Math.random() * 5 + 2;
         particle.style.width = size + 'px';
         particle.style.height = size + 'px';
@@ -50,198 +120,111 @@ function createParticles() {
         particle.style.top = Math.random() * 100 + '%';
         particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
         particle.style.animationDelay = Math.random() * 5 + 's';
-        
         container.appendChild(particle);
     }
 }
 
 // ========================================
-// Counter Animation
+// Counter Animation - 5000 থেকে শুরু
 // ========================================
-function animateCounter(element, target) {
-    let current = 5000;
-    const increment = target / 100;
-    const timer = setInterval(() => {
+function animateCounter(element, startValue, endValue) {
+    if (!element) return;
+    
+    let current = startValue;
+    const increment = (endValue - startValue) / 80;
+    const stepTime = 25;
+    
+    const timer = setInterval(function() {
         current += increment;
-        if (current >= target) {
-            current = target;
+        if (current >= endValue) {
+            current = endValue;
             clearInterval(timer);
         }
         element.textContent = Math.floor(current).toLocaleString() + '+';
-    }, 20);
+    }, stepTime);
 }
 
 // ========================================
-// APK Information Detection
+// Visitor Count - 5000 থেকে শুরু
 // ========================================
-async function getAPKInfo() {
-    try {
-        // Replace these with your actual APK details
-        const appSize = '12.5 MB';
-        const appVersion = 'v1.2.0';
-        
-        // Update UI
-        document.getElementById('appSize').textContent = appSize;
-        document.getElementById('appVersion').textContent = appVersion;
-        
-        // Store APK filename globally
-        window.APK_FILENAME = 'broker-vpn.apk';
-        
-    } catch (error) {
-        console.error('Error loading APK info:', error);
-        document.getElementById('appSize').textContent = '12.5 MB';
-        document.getElementById('appVersion').textContent = 'v1.2.0';
-    }
-}
-
-// ========================================
-// Visitor Tracking
-// ========================================
-function trackVisitor() {
-    let visitors = localStorage.getItem('brokerVpnVisitors');
-    
-    if (!visitors) {
-        visitors = 5000;
+function getVisitorCount() {
+    let count = localStorage.getItem('brokerVpnVisitors');
+    if (!count) {
+        count = BASE_COUNT;
     } else {
-        visitors = parseInt(visitors) + 1;
+        count = parseInt(count);
     }
+    return count;
+}
+
+function incrementVisitorCount() {
+    let count = getVisitorCount();
+    count++;
+    localStorage.setItem('brokerVpnVisitors', count);
+    return count;
+}
+
+function displayVisitorCount() {
+    const element = document.getElementById('visitorCount');
+    if (!element) return;
     
-    localStorage.setItem('brokerVpnVisitors', visitors);
-    animateCounter(document.getElementById('visitorCount'), visitors);
+    const count = incrementVisitorCount();
+    // 5000 থেকে animate শুরু হবে
+    animateCounter(element, BASE_COUNT, count);
+    
+    console.log('Visitors:', count);
 }
 
 // ========================================
-// Install Tracking
+// Install Count - 5000 থেকে শুরু
 // ========================================
-function trackInstall() {
-    let installs = localStorage.getItem('brokerVpnInstalls');
-    
-    if (!installs) {
-        installs = 5000;
+function getInstallCount() {
+    let count = localStorage.getItem('brokerVpnInstalls');
+    if (!count) {
+        count = BASE_COUNT;
     } else {
-        installs = parseInt(installs) + 1;
+        count = parseInt(count);
     }
-    
-    localStorage.setItem('brokerVpnInstalls', installs);
-    
-    // Update counter display
-    const installElement = document.getElementById('installCount');
-    installElement.textContent = parseInt(installs).toLocaleString() + '+';
+    return count;
 }
 
-// ========================================
-// Download Button Handler
-// ========================================
-document.addEventListener('DOMContentLoaded', function() {
-    const downloadBtn = document.getElementById('downloadBtn');
+function incrementInstallCount() {
+    let count = getInstallCount();
+    count++;
+    localStorage.setItem('brokerVpnInstalls', count);
     
-    downloadBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        // Track install
-        trackInstall();
-        
-        // APK file path
-        const apkFileName = window.APK_FILENAME || 'broker-vpn.apk';
-        const apkPath = 'apk/' + apkFileName;
-        
-        // Create temporary download link
-        const link = document.createElement('a');
-        link.href = apkPath;
-        link.download = apkFileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        // Update button text
-        const originalHTML = this.innerHTML;
-        this.innerHTML = '<i class="fas fa-check"></i><span>Downloading...</span>';
-        this.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
-        
-        // Reset button after 3 seconds
-        setTimeout(() => {
-            this.innerHTML = originalHTML;
-            this.style.background = 'linear-gradient(135deg, var(--primary-blue), var(--primary-purple))';
-        }, 3000);
-    });
-});
-
-// ========================================
-// Smooth Scroll
-// ========================================
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
-});
-
-// ========================================
-// Scroll Animation Observer
-// ========================================
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
-
-const observer = new IntersectionObserver(function(entries) {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
-        }
-    });
-}, observerOptions);
-
-// Apply animation to elements
-document.addEventListener('DOMContentLoaded', function() {
-    const animatedElements = document.querySelectorAll('.feature-card, .stat-card, .screenshot-item');
+    // Real-time update
+    const element = document.getElementById('installCount');
+    if (element) {
+        element.textContent = count.toLocaleString() + '+';
+    }
     
-    animatedElements.forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(50px)';
-        el.style.transition = 'all 0.6s ease';
-        observer.observe(el);
-    });
-});
+    console.log('Installs:', count);
+    return count;
+}
 
-// ========================================
-// Image Error Handling
-// ========================================
-document.addEventListener('DOMContentLoaded', function() {
-    const images = document.querySelectorAll('img');
+function displayInstallCount() {
+    const element = document.getElementById('installCount');
+    if (!element) return;
     
-    images.forEach(img => {
-        img.onerror = function() {
-            console.warn('Image failed to load:', this.src);
-            this.style.display = 'none';
-        };
-    });
-});
+    const count = getInstallCount();
+    // 5000 থেকে animate শুরু হবে
+    animateCounter(element, BASE_COUNT, count);
+}
 
 // ========================================
 // Initialize on Page Load
 // ========================================
 window.addEventListener('load', function() {
-    // Create animated particles
+    // Particles তৈরি
     createParticles();
     
-    // Track visitor
-    trackVisitor();
+    // Visitor count দেখাও (5000 থেকে শুরু)
+    displayVisitorCount();
     
-    // Get APK information
-    getAPKInfo();
+    // Install count দেখাও (5000 থেকে শুরু)
+    displayInstallCount();
     
-    // Initialize install counter (don't increment on page load)
-    const installs = parseInt(localStorage.getItem('brokerVpnInstalls')) || 5000;
-    animateCounter(document.getElementById('installCount'), installs);
-    
-    console.log('Broker VPN Website Loaded Successfully! 🚀');
-
+    console.log('✅ Broker VPN Website Loaded!');
+    console.log('Base Count:', BASE_COUNT);
 });
