@@ -1,13 +1,25 @@
 /**
- * Broker VPN - JavaScript
+ * Broker VPN - JavaScript with Firebase
  * Developer: Yeasin Ali
- * All counters start from 5000
+ * Real-time global counter
  */
 
 // ========================================
 // Configuration
 // ========================================
-const BASE_COUNT = 5000; // শুরু 5000 থেকে
+const BASE_COUNT = 5000;
+
+// ========================================
+// Wait for Firebase to load
+// ========================================
+function waitForFirebase(callback) {
+    const checkFirebase = setInterval(function() {
+        if (window.firebaseDB) {
+            clearInterval(checkFirebase);
+            callback();
+        }
+    }, 100);
+}
 
 // ========================================
 // DOM Ready
@@ -34,7 +46,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Close menu when clicking nav link
         document.querySelectorAll('.nav-link').forEach(function(link) {
             link.addEventListener('click', function() {
                 navMenu.classList.remove('active');
@@ -46,21 +57,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ========================================
-    // Download Button - শুধু tracking, block না
+    // Download Button Handler
     // ========================================
     const downloadBtn = document.getElementById('downloadBtn');
     
     if (downloadBtn) {
         downloadBtn.addEventListener('click', function() {
             // Install count বাড়াও
-            incrementInstallCount();
+            incrementInstalls();
             
             // Button animation
             const originalHTML = this.innerHTML;
             this.innerHTML = '<i class="fas fa-check"></i><span>Downloading...</span>';
             this.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
             
-            // 3 সেকেন্ড পর আগের মত
             setTimeout(function() {
                 downloadBtn.innerHTML = originalHTML;
                 downloadBtn.style.background = 'linear-gradient(135deg, #4A90E2, #9B59B6)';
@@ -125,13 +135,13 @@ function createParticles() {
 }
 
 // ========================================
-// Counter Animation - 5000 থেকে শুরু
+// Counter Animation
 // ========================================
-function animateCounter(element, startValue, endValue) {
+function animateCounter(element, endValue) {
     if (!element) return;
     
-    let current = startValue;
-    const increment = (endValue - startValue) / 80;
+    let current = 0;
+    const increment = endValue / 80;
     const stepTime = 25;
     
     const timer = setInterval(function() {
@@ -145,86 +155,82 @@ function animateCounter(element, startValue, endValue) {
 }
 
 // ========================================
-// Visitor Count - 5000 থেকে শুরু
+// Firebase: Visitor Count
 // ========================================
-function getVisitorCount() {
-    let count = localStorage.getItem('brokerVpnVisitors');
-    if (!count) {
-        count = BASE_COUNT;
-    } else {
-        count = parseInt(count);
+function initVisitorCount() {
+    const visitorRef = window.firebaseRef(window.firebaseDB, 'stats/visitors');
+    
+    // Real-time listener
+    window.firebaseOnValue(visitorRef, function(snapshot) {
+        let count = snapshot.val();
+        
+        if (count === null) {
+            window.firebaseSet(visitorRef, BASE_COUNT);
+            count = BASE_COUNT;
+        }
+        
+        const element = document.getElementById('visitorCount');
+        if (element) {
+            animateCounter(element, count);
+        }
+        
+        console.log('👥 Visitors:', count);
+    });
+    
+    // Increment once per session
+    if (!sessionStorage.getItem('hasVisited')) {
+        window.firebaseTransaction(visitorRef, function(currentCount) {
+            return (currentCount || BASE_COUNT) + 1;
+        });
+        sessionStorage.setItem('hasVisited', 'true');
     }
-    return count;
-}
-
-function incrementVisitorCount() {
-    let count = getVisitorCount();
-    count++;
-    localStorage.setItem('brokerVpnVisitors', count);
-    return count;
-}
-
-function displayVisitorCount() {
-    const element = document.getElementById('visitorCount');
-    if (!element) return;
-    
-    const count = incrementVisitorCount();
-    // 5000 থেকে animate শুরু হবে
-    animateCounter(element, BASE_COUNT, count);
-    
-    console.log('Visitors:', count);
 }
 
 // ========================================
-// Install Count - 5000 থেকে শুরু
+// Firebase: Install Count
 // ========================================
-function getInstallCount() {
-    let count = localStorage.getItem('brokerVpnInstalls');
-    if (!count) {
-        count = BASE_COUNT;
-    } else {
-        count = parseInt(count);
-    }
-    return count;
+function initInstallCount() {
+    const installRef = window.firebaseRef(window.firebaseDB, 'stats/installs');
+    
+    // Real-time listener
+    window.firebaseOnValue(installRef, function(snapshot) {
+        let count = snapshot.val();
+        
+        if (count === null) {
+            window.firebaseSet(installRef, BASE_COUNT);
+            count = BASE_COUNT;
+        }
+        
+        const element = document.getElementById('installCount');
+        if (element) {
+            animateCounter(element, count);
+        }
+        
+        console.log('📥 Installs:', count);
+    });
 }
 
-function incrementInstallCount() {
-    let count = getInstallCount();
-    count++;
-    localStorage.setItem('brokerVpnInstalls', count);
+function incrementInstalls() {
+    const installRef = window.firebaseRef(window.firebaseDB, 'stats/installs');
     
-    // Real-time update
-    const element = document.getElementById('installCount');
-    if (element) {
-        element.textContent = count.toLocaleString() + '+';
-    }
+    window.firebaseTransaction(installRef, function(currentCount) {
+        return (currentCount || BASE_COUNT) + 1;
+    });
     
-    console.log('Installs:', count);
-    return count;
-}
-
-function displayInstallCount() {
-    const element = document.getElementById('installCount');
-    if (!element) return;
-    
-    const count = getInstallCount();
-    // 5000 থেকে animate শুরু হবে
-    animateCounter(element, BASE_COUNT, count);
+    console.log('✅ Install count increased!');
 }
 
 // ========================================
-// Initialize on Page Load
+// Initialize Everything
 // ========================================
 window.addEventListener('load', function() {
-    // Particles তৈরি
     createParticles();
     
-    // Visitor count দেখাও (5000 থেকে শুরু)
-    displayVisitorCount();
-    
-    // Install count দেখাও (5000 থেকে শুরু)
-    displayInstallCount();
-    
-    console.log('✅ Broker VPN Website Loaded!');
-    console.log('Base Count:', BASE_COUNT);
+    // Wait for Firebase then start counters
+    waitForFirebase(function() {
+        initVisitorCount();
+        initInstallCount();
+        console.log('✅ Broker VPN Website Loaded!');
+        console.log('🔥 Firebase Real-time counters active!');
+    });
 });
