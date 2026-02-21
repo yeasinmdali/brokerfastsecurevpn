@@ -3,7 +3,6 @@
    Developer: Yeasin Ali
    ======================================== */
 
-/* CSS Variables */
 :root {
     --primary-blue: #4A90E2;
     --primary-purple: #9B59B6;
@@ -13,7 +12,6 @@
     --text-gray: #b8b8b8;
 }
 
-/* Reset & Base Styles */
 * {
     margin: 0;
     padding: 0;
@@ -52,18 +50,10 @@ body {
 }
 
 @keyframes float {
-    0%, 100% { 
-        transform: translateY(0) translateX(0); 
-    }
-    25% { 
-        transform: translateY(-50px) translateX(50px); 
-    }
-    50% { 
-        transform: translateY(-100px) translateX(-50px); 
-    }
-    75% { 
-        transform: translateY(-50px) translateX(100px); 
-    }
+    0%, 100% { transform: translateY(0) translateX(0); }
+    25% { transform: translateY(-50px) translateX(50px); }
+    50% { transform: translateY(-100px) translateX(-50px); }
+    75% { transform: translateY(-50px) translateX(100px); }
 }
 
 /* Header */
@@ -94,6 +84,7 @@ header {
     background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
     animation: glow 2s ease-in-out infinite;
 }
 
@@ -105,12 +96,8 @@ header {
 }
 
 @keyframes glow {
-    0%, 100% { 
-        filter: drop-shadow(0 0 5px var(--primary-blue)); 
-    }
-    50% { 
-        filter: drop-shadow(0 0 20px var(--primary-purple)); 
-    }
+    0%, 100% { filter: drop-shadow(0 0 5px var(--primary-blue)); }
+    50% { filter: drop-shadow(0 0 20px var(--primary-purple)); }
 }
 
 /* Navigation Menu */
@@ -169,7 +156,7 @@ header {
 
 /* Hero Section */
 .hero {
-    min-height: 50vh;
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -184,14 +171,8 @@ header {
 }
 
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(50px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .hero h1 {
@@ -200,18 +181,13 @@ header {
     background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
     animation: slideIn 1s ease;
 }
 
 @keyframes slideIn {
-    from { 
-        transform: translateX(-100px); 
-        opacity: 0; 
-    }
-    to { 
-        transform: translateX(0); 
-        opacity: 1; 
-    }
+    from { transform: translateX(-100px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
 }
 
 .hero p {
@@ -230,12 +206,8 @@ header {
 }
 
 @keyframes bounce {
-    0%, 100% { 
-        transform: translateY(0); 
-    }
-    50% { 
-        transform: translateY(-20px); 
-    }
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
 }
 
 /* Download Button */
@@ -267,12 +239,8 @@ header {
 }
 
 @keyframes pulse {
-    0%, 100% { 
-        transform: scale(1); 
-    }
-    50% { 
-        transform: scale(1.2); 
-    }
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
 }
 
 .app-info {
@@ -332,7 +300,9 @@ header {
     background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
     margin-bottom: 20px;
+    display: block;
 }
 
 .stat-number {
@@ -341,6 +311,7 @@ header {
     background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .stat-label {
@@ -362,6 +333,7 @@ header {
     background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .features-grid {
@@ -411,6 +383,7 @@ header {
     background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .feature-card h3 {
@@ -538,26 +511,8 @@ footer {
     border-top: 1px solid rgba(74, 144, 226, 0.1);
 }
 
-/* Loading Animation */
-.loading {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    border-top-color: white;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to { 
-        transform: rotate(360deg); 
-    }
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
-    /* Mobile Menu */
     .menu-toggle {
         display: block;
     }
@@ -655,5 +610,4 @@ footer {
         flex-direction: column;
         gap: 20px;
     }
-
 }
