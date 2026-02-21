@@ -1,13 +1,7 @@
-/**
  * Broker VPN - JavaScript
  * Developer: Yeasin Ali
  * Description: All interactive features for Broker VPN website
  */
-
-// ========================================
-// APK Download URL (GitHub Release)
-// ========================================
-const APK_DOWNLOAD_URL = 'https://github.com/yeasinmdali/brokerfastsecurevpn/releases/download/v1.0.15/broker-vpn.apk';
 
 // ========================================
 // Mobile Menu Toggle
@@ -78,43 +72,25 @@ function animateCounter(element, target) {
 }
 
 // ========================================
-// APK Information Detection (Auto from GitHub)
+// APK Information Detection
 // ========================================
 async function getAPKInfo() {
     try {
-        // Extract version from GitHub URL
-        const urlParts = APK_DOWNLOAD_URL.split('/');
-        const versionIndex = urlParts.findIndex(part => part.startsWith('v'));
-        const version = versionIndex !== -1 ? urlParts[versionIndex] : 'v1.0.15';
+        // Replace these with your actual APK details
+        const appSize = '12.5 MB';
+        const appVersion = 'v1.2.0';
         
-        // Try to get file size from GitHub API
-        const repoUrl = 'https://api.github.com/repos/yeasinmdali/brokerfastsecurevpn/releases/tags/' + version;
+        // Update UI
+        document.getElementById('appSize').textContent = appSize;
+        document.getElementById('appVersion').textContent = appVersion;
         
-        try {
-            const response = await fetch(repoUrl);
-            const data = await response.json();
-            
-            if (data.assets && data.assets.length > 0) {
-                const apkAsset = data.assets.find(asset => asset.name.endsWith('.apk'));
-                if (apkAsset) {
-                    const sizeInMB = (apkAsset.size / (1024 * 1024)).toFixed(1);
-                    document.getElementById('appSize').textContent = sizeInMB + ' MB';
-                    document.getElementById('appVersion').textContent = version;
-                    return;
-                }
-            }
-        } catch (apiError) {
-            console.log('GitHub API limit reached, using default values');
-        }
-        
-        // Fallback values
-        document.getElementById('appSize').textContent = '12.5 MB';
-        document.getElementById('appVersion').textContent = version;
+        // Store APK filename globally
+        window.APK_FILENAME = 'broker-vpn.apk';
         
     } catch (error) {
         console.error('Error loading APK info:', error);
         document.getElementById('appSize').textContent = '12.5 MB';
-        document.getElementById('appVersion').textContent = 'v1.0.15';
+        document.getElementById('appVersion').textContent = 'v1.2.0';
     }
 }
 
@@ -154,7 +130,7 @@ function trackInstall() {
 }
 
 // ========================================
-// Download Button Handler (Fixed for GitHub Release)
+// Download Button Handler
 // ========================================
 document.addEventListener('DOMContentLoaded', function() {
     const downloadBtn = document.getElementById('downloadBtn');
@@ -165,25 +141,28 @@ document.addEventListener('DOMContentLoaded', function() {
         // Track install
         trackInstall();
         
-        // Update button immediately
-        const originalHTML = this.innerHTML;
-        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Starting Download...</span>';
-        this.style.background = 'linear-gradient(135deg, #f39c12, #e67e22)';
+        // APK file path
+        const apkFileName = window.APK_FILENAME || 'broker-vpn.apk';
+        const apkPath = 'apk/' + apkFileName;
         
-        // Method 1: Direct window location (most reliable for GitHub releases)
+        // Create temporary download link
+        const link = document.createElement('a');
+        link.href = apkPath;
+        link.download = apkFileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Update button text
+        const originalHTML = this.innerHTML;
+        this.innerHTML = '<i class="fas fa-check"></i><span>Downloading...</span>';
+        this.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+        
+        // Reset button after 3 seconds
         setTimeout(() => {
-            window.location.href = APK_DOWNLOAD_URL;
-            
-            // Update button to success
-            downloadBtn.innerHTML = '<i class="fas fa-check"></i><span>Downloading...</span>';
-            downloadBtn.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
-            
-            // Reset button after 3 seconds
-            setTimeout(() => {
-                downloadBtn.innerHTML = originalHTML;
-                downloadBtn.style.background = 'linear-gradient(135deg, var(--primary-blue), var(--primary-purple))';
-            }, 3000);
-        }, 500);
+            this.innerHTML = originalHTML;
+            this.style.background = 'linear-gradient(135deg, var(--primary-blue), var(--primary-purple))';
+        }, 3000);
     });
 });
 
@@ -264,5 +243,5 @@ window.addEventListener('load', function() {
     animateCounter(document.getElementById('installCount'), installs);
     
     console.log('Broker VPN Website Loaded Successfully! 🚀');
-    console.log('APK Download URL:', APK_DOWNLOAD_URL);
+
 });
