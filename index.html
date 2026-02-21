@@ -61,10 +61,10 @@
 
             <div class="app-info">
                 <div class="info-item">
-                    <i class="fas fa-box"></i> Size: <span id="appSize">35.57 MB</span>
+                    <i class="fas fa-box"></i> Size: <span>35.57 MB</span>
                 </div>
                 <div class="info-item">
-                    <i class="fas fa-code-branch"></i> Version: <span id="appVersion">v1.0.15</span>
+                    <i class="fas fa-code-branch"></i> Version: <span>v1.0.15</span>
                 </div>
                 <div class="info-item">
                     <i class="fab fa-android"></i> Android 5.0+
@@ -78,12 +78,16 @@
         <div class="stats-container">
             <div class="stat-card">
                 <i class="fas fa-users"></i>
-                <div class="stat-number" id="visitorCount">5,000+</div>
+                <div class="stat-number" id="visitorCount">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
                 <div class="stat-label">Total Visitors</div>
             </div>
             <div class="stat-card">
                 <i class="fas fa-download"></i>
-                <div class="stat-number" id="installCount">5,000+</div>
+                <div class="stat-number" id="installCount">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
                 <div class="stat-label">Total Installs</div>
             </div>
             <div class="stat-card">
@@ -243,7 +247,38 @@
         </div>
     </footer>
 
-    <!-- JavaScript -->
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue, set, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOcSU6qAjydwztAMyiOJP1CJFV9lhFnZk",
+            authDomain: "broker-vpn-counter.firebaseapp.com",
+            databaseURL: "https://broker-vpn-counter-default-rtdb.firebaseio.com",
+            projectId: "broker-vpn-counter",
+            storageBucket: "broker-vpn-counter.firebasestorage.app",
+            messagingSenderId: "772731410203",
+            appId: "1:772731410203:web:b689aebe267de51534e5be",
+            measurementId: "G-BRRQQFKJRR"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Make it global
+        window.firebaseDB = database;
+        window.firebaseRef = ref;
+        window.firebaseOnValue = onValue;
+        window.firebaseSet = set;
+        window.firebaseTransaction = runTransaction;
+
+        console.log('🔥 Firebase initialized successfully!');
+    </script>
+
+    <!-- Custom JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
